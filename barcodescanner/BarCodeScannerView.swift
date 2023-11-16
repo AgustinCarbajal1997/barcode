@@ -7,14 +7,27 @@
 
 import SwiftUI
 
+struct AlertItem: Identifiable {
+    let id = UUID()
+    let title:String
+    let message:String
+    let dismissButton: Alert.Button
+}
+
+struct AlertContext {
+    static let invalidDeviceInput =  AlertItem(title: "Invalid", message: "Invalid device input", dismissButton: .default(Text("Ok")))
+    static let invalidScannedInput =  AlertItem(title: "Invalid", message: "Invalid scanned input", dismissButton: .default(Text("Ok")))
+}
+
 struct BarCodeScannerView: View {
     
     @State private var scannedCode: String = ""
+    @State private var alertItem: AlertItem?
     
     var body: some View {
         NavigationView {
             VStack {
-                ScannerView(scannedCode: $scannedCode)
+                ScannerView(scannedCode: $scannedCode, alertItem: $alertItem)
                     .frame(maxWidth: .infinity, maxHeight: 300)
                 
                 Spacer().frame(height: 60)
@@ -30,6 +43,12 @@ struct BarCodeScannerView: View {
                     .padding()
             }
             .navigationTitle("Barcode scanner")
+            .alert(item: $alertItem) {
+                alertItem in
+                Alert(title: Text(alertItem.title),
+                                      message: Text(alertItem.message),
+                                      dismissButton: alertItem.dismissButton)
+            }
         }
     }
 }
